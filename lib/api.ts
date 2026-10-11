@@ -14,6 +14,7 @@ export interface FetchNotesParams {
   page?: number;
   perPage?: number;
   search?: string;
+  tag?: string;
 }
 
 export interface FetchNotesResponse {
@@ -36,21 +37,30 @@ interface ApiNotesResponse {
 export const fetchNotes = async (
   params: FetchNotesParams = {},
 ): Promise<FetchNotesResponse> => {
-  const { page = 1, perPage = 12, search = "" } = params;
+  const { page = 1, perPage = 12, search = "", tag } = params;
+
+  const queryParams: Record<string, string | number> = {
+    page,
+    perPage,
+  };
+
+  if (search) {
+    queryParams.search = search;
+  }
+
+  if (tag && tag.toLowerCase() !== "all") {
+    queryParams.tag = tag;
+  }
 
   const response = await api.get<ApiNotesResponse>("/notes", {
-    params: { page, perPage, ...(search && { search }) },
+    params: queryParams, // ← передаємо зібраний об'єкт
   });
 
   const items: Note[] = response.data.notes || [];
   const totalPages: number = response.data.totalPages ?? 1;
   const total: number = totalPages * perPage;
 
-  return {
-    items,
-    total,
-    totalPages,
-  };
+  return { items, total, totalPages };
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
