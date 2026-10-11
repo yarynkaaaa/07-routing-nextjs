@@ -31,7 +31,7 @@ export default function NotesClient({ tag }: NotesClientProps) {
   });
 
   const pageCount = data?.totalPages || 0;
-  const notes = data?.items || [];
+  const notes = data?.notes || [];
 
   const handlePageChange = (page: number) => setCurrentPage(page);
   const handleSearchChange = (value: string) => {

@@ -14,14 +14,13 @@ interface PageProps {
 
 export default async function FilteredNotesPage({ params }: PageProps) {
   const { slug } = await params;
-  // slug[0] міститиме 'all' або назву тегу (наприклад, 'Work')
   const tag = slug?.[0] || "all";
 
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: ["notes", 1, "", tag],
-    queryFn: () => fetchNotes({ page: 1, search: "", tag }),
+    queryFn: () => fetchNotes({ page: 1, perPage: 12, search: "", tag }),
   });
 
   return (

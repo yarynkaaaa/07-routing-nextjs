@@ -18,8 +18,7 @@ export interface FetchNotesParams {
 }
 
 export interface FetchNotesResponse {
-  items: Note[];
-  total: number;
+  notes: Note[];
   totalPages: number;
 }
 
@@ -27,11 +26,6 @@ export interface CreateNoteParams {
   title: string;
   content: string;
   tag: NoteTag;
-}
-
-interface ApiNotesResponse {
-  notes: Note[];
-  totalPages: number;
 }
 
 export const fetchNotes = async (
@@ -52,21 +46,18 @@ export const fetchNotes = async (
     queryParams.tag = tag;
   }
 
-  const response = await api.get<ApiNotesResponse>("/notes", {
-    params: queryParams, // ← передаємо зібраний об'єкт
+  const response = await api.get<FetchNotesResponse>("/notes", {
+    params: queryParams,
   });
 
-  const items: Note[] = response.data.notes || [];
-  const totalPages: number = response.data.totalPages ?? 1;
-  const total: number = totalPages * perPage;
-
-  return { items, total, totalPages };
+  return response.data;
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
   const { data } = await api.get<Note>(`/notes/${id}`);
   return data;
 };
+
 export const createNote = async (noteData: CreateNoteParams): Promise<Note> => {
   const response = await api.post<Note>("/notes", noteData);
   return response.data;
